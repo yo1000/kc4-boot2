@@ -1,6 +1,10 @@
 server:
   port: 8081
 
+logging:
+  level:
+    root: debug
+
 ## Refs.
 ## https://www.keycloak.org/docs/latest/securing_apps/index.html#_spring_boot_adapter
 keycloak:
@@ -8,6 +12,34 @@ keycloak:
   auth-server-url: http://localhost:8080/auth
   ssl-required: external
   resource: kc4-boot2-client
-  credentials:
-    secret: 88a8a82f-e41f-4250-8b20-831d2309fc31
-  use-resource-role-mappings: true
+#  credentials:
+#    secret: 88a8a82f-e41f-4250-8b20-831d2309fc31
+##  use-resource-role-mappings: true
+##  enable-basic-auth: true
+#  public-client: false
+#  principal-attribute: preferred_username
+#  security-constraints:
+#  - securityCollections:
+#    - name: static-resources
+#      patterns:
+#      - /css/*
+#      - /fonts/*
+#      - /js/*
+#      - /favicon.ico
+#  - securityCollections:
+#    - name: user
+#      patterns:
+#      - /customers/*
+#    authRoles:
+#    - user
+#    - ROLE_USER
+#  - securityCollections:
+#    - name: admin
+#      patterns:
+#      - /admin/*
+#    authRoles:
+#    - admin
+#    - ROLE_ADMIN
+
+#spring:
+#  security:
