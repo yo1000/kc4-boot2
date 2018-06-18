@@ -14,7 +14,7 @@ bin/add-user-keycloak.sh \
 bin/standalone.sh \
   -b 0.0.0.0 &
 
-while [ -z `ps -x | grep keycloak | grep -v grep | awk '{print $1}'` ]; do sleep 10; done; echo "keycloak ok"
+while [ -z "`netstat -an | grep '127.0.0.1.9990' | grep LISTEN`" ]; do sleep 10; done; echo "keycloak ok"
 
 ## Login to Keycloak
 bin/kcadm.sh config credentials \
