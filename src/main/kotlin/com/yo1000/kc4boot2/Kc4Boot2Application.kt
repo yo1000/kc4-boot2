@@ -35,72 +35,30 @@ fun main(args: Array<String>) {
 
 @KeycloakConfiguration
 class SecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
-    /**
-     * Registers the KeycloakAuthenticationProvider with the authentication manager.
-     */
-    fun configureGlobal(auth: AuthenticationManagerBuilder) {
-        auth.authenticationProvider(keycloakAuthenticationProvider())
-    }
-
-    /**
-     * Defines the session authentication strategy.
-     */
-    @Bean
     override fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
         return RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
     }
 
-    @Bean
     override fun adapterDeploymentContext(): AdapterDeploymentContext {
         val factoryBean = AdapterDeploymentContextFactoryBean(ClassPathResource("keycloak.json"))
         factoryBean.afterPropertiesSet()
         return factoryBean.`object`!!
     }
 
-    @Bean
-    fun grantedAuthoritiesMapper(): GrantedAuthoritiesMapper {
-        val mapper = SimpleAuthorityMapper()
-        mapper.setConvertToUpperCase(true)
-        return mapper
-    }
-
-    @Bean
-    fun keycloakConfigResolver(): KeycloakConfigResolver {
-        return KeycloakSpringBootConfigResolver()
-    }
-
-    @Bean
-    fun keycloakAuthenticationProcessingFilterRegistrationBean(
-            filter: KeycloakAuthenticationProcessingFilter): FilterRegistrationBean<KeycloakAuthenticationProcessingFilter> {
-        val registrationBean = FilterRegistrationBean(filter)
-        registrationBean.isEnabled = false
-        return registrationBean
-    }
-
-    @Bean
-    fun keycloakPreAuthActionsFilterRegistrationBean(
-            filter: KeycloakPreAuthActionsFilter): FilterRegistrationBean<KeycloakPreAuthActionsFilter> {
-        val registrationBean = FilterRegistrationBean(filter)
-        registrationBean.isEnabled = false
-        return registrationBean
-    }
-
-    override fun keycloakAuthenticationProvider(): KeycloakAuthenticationProvider {
-        val provider = super.keycloakAuthenticationProvider()
-        provider.setGrantedAuthoritiesMapper(grantedAuthoritiesMapper())
-        return provider
-    }
-
     override fun configure(auth: AuthenticationManagerBuilder?) {
-        auth!!.authenticationProvider(keycloakAuthenticationProvider())
+        auth!!.authenticationProvider(keycloakAuthenticationProvider().also {
+            it.setGrantedAuthoritiesMapper(SimpleAuthorityMapper().also {
+                it.setConvertToUpperCase(true)
+            })
+        })
     }
 
     override fun configure(http: HttpSecurity) {
         super.configure(http)
         http.authorizeRequests()
                 .antMatchers("/sso/login*").permitAll()
-                .antMatchers("/customers*").hasAnyRole("user", "USER", "ROLE_USER")
-                .antMatchers("/admin*").hasAnyRole("admin", "ADMIN", "ROLE_ADMIN")
+                .antMatchers("/customers*").hasAnyRole("USER")
+                .antMatchers("/admin*").hasAnyRole("ADMIN")
                 .anyRequest().permitAll();
         http.csrf().disable()
     }
@@ -109,13 +67,31 @@ class SecurityConfig : KeycloakWebSecurityConfigurerAdapter() {
 @RestController
 class Kc4Controller {
     @GetMapping("/customers")
-    fun getCustomers(): Any {
-        return "customers"
+    fun getCustomers(token: KeycloakAuthenticationToken): Any {
+        return """
+            <h1>customers</h1>
+            <p><code>
+            ${token}
+            </code></p>
+            <ul>
+            <li><code>${token.name}</code></li>
+            <li><code>${token.account.keycloakSecurityContext.token.preferredUsername}</code></li>
+            </ul>
+            """.trimIndent()
     }
 
     @GetMapping("/admin")
     fun getAdmin(token: KeycloakAuthenticationToken): Any {
         println(token)
-        return "admin"
+        return """
+            <h1>admin</h1>
+            <p><code>
+            ${token}
+            </code></p>
+            <ul>
+            <li><code>${token.name}</code></li>
+            <li><code>${token.account.keycloakSecurityContext.token.preferredUsername}</code></li>
+            </ul>
+        """.trimIndent()
     }
 }
