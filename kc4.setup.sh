@@ -1,5 +1,31 @@
 #!/usr/bin/env bash
 
+cd `dirname $0`
+
+## Download and Extract Keycloak
+if [ ! -d keycloak ]; then
+  mkdir keycloak
+fi
+cd keycloak
+
+if [ ! -d keycloak-4.0.0.Final ]; then
+  curl -O https://downloads.jboss.org/keycloak/4.0.0.Final/keycloak-4.0.0.Final.tar.gz
+  tar -zxvf keycloak-4.0.0.Final.tar.gz
+fi
+cd keycloak-4.0.0.Final
+
+## If exists Keycloak process, then exit
+if [ -n "`ps x | grep keycloak | grep -v grep`" ]; then
+  echo 'Keycloak has already started.'
+  exit 1
+fi
+
+## If exists using 8080 port process, then exit
+if [ -n "`netstat -an | grep LISTEN | awk '{print $4}' | grep '.8080'`" ]; then
+  echo 'Port 8080 has already used by another process.'
+  exit 1
+fi
+
 ## Create Wildfly admin
 bin/add-user.sh \
   -u wildfly \
