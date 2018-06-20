@@ -108,3 +108,9 @@ RES_SRV_ID=`bin/kcadm.sh create clients -r ${REALM} -s clientId=${CLIENT_RESOURC
   echo "Created new client with id '${RES_SRV_ID}'"
 RES_CLI_ID=`bin/kcadm.sh create clients -r ${REALM} -s clientId=${CLIENT_RESOURCE_CLIENT} -s "redirectUris=[\"${ALLOW_REDIRECT_FROM}\"]" -i`; \
   echo "Created new client with id '${RES_CLI_ID}'"
+
+## Install keycloak.json
+bin/kcadm.sh get clients/${RES_SRV_ID}/installation/providers/keycloak-oidc-keycloak-json \
+  -r ${REALM}
+bin/kcadm.sh get clients/${RES_CLI_ID}/installation/providers/keycloak-oidc-keycloak-json \
+  -r ${REALM} >"`dirname $0`/src/main/resources/keycloak.json"
