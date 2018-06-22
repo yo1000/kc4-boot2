@@ -21,7 +21,7 @@ if [ -n "`ps x | grep keycloak | grep -v grep`" ]; then
 fi
 
 ## If exists using 8080 port process, then exit
-if [ -n "`netstat -an | grep LISTEN | awk '{print $4}' | grep '.8080'`" ]; then
+if [ -n "`netstat -an | grep LISTEN | awk '{print $4}' | grep '\.8080'`" ]; then
   echo 'Port 8080 has already used by another process.'
   exit 1
 fi
