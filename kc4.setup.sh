@@ -58,7 +58,8 @@ readonly USERNAME_ADMIN="alice"
 readonly USERNAME_USER="bob"
 readonly CLIENT_RESOURCE_SERVER="${REALM}-server"
 readonly CLIENT_RESOURCE_CLIENT="${REALM}-client"
-readonly ALLOW_REDIRECT_FROM="http://localhost:8081/*"
+readonly ALLOW_REDIRECT_FROM1="http://127.0.0.1:8081/*"
+readonly ALLOW_REDIRECT_FROM2="http://localhost:8081/*"
 
 ## Create Realm
 bin/kcadm.sh create realms \
@@ -107,7 +108,7 @@ bin/kcadm.sh add-roles \
 ## Create Clients
 RES_SRV_ID=`bin/kcadm.sh create clients -r ${REALM} -s clientId=${CLIENT_RESOURCE_SERVER} -s bearerOnly=true -i`; \
   echo "Created new client with id '${RES_SRV_ID}'"
-RES_CLI_ID=`bin/kcadm.sh create clients -r ${REALM} -s clientId=${CLIENT_RESOURCE_CLIENT} -s "redirectUris=[\"${ALLOW_REDIRECT_FROM}\"]" -i`; \
+RES_CLI_ID=`bin/kcadm.sh create clients -r ${REALM} -s clientId=${CLIENT_RESOURCE_CLIENT} -s "redirectUris=[\"${ALLOW_REDIRECT_FROM1}\", \"${ALLOW_REDIRECT_FROM2}\"]" -i`; \
   echo "Created new client with id '${RES_CLI_ID}'"
 
 ## Install keycloak.json
