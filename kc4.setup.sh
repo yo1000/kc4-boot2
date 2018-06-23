@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 cd `dirname $0`
+DIR=`pwd`
 
 ## Download and Extract Keycloak
 if [ ! -d keycloak ]; then
@@ -113,4 +114,4 @@ RES_CLI_ID=`bin/kcadm.sh create clients -r ${REALM} -s clientId=${CLIENT_RESOURC
 bin/kcadm.sh get clients/${RES_SRV_ID}/installation/providers/keycloak-oidc-keycloak-json \
   -r ${REALM}
 bin/kcadm.sh get clients/${RES_CLI_ID}/installation/providers/keycloak-oidc-keycloak-json \
-  -r ${REALM} >"`dirname $0`/src/main/resources/keycloak.json"
+  -r ${REALM} >"${DIR}/src/main/resources/keycloak.json"
